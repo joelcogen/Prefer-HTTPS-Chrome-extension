@@ -17,7 +17,7 @@ function set_status() {
 	document.getElementById("switchlink").innerHTML = localStorage["onoff"]=="on" ? "Turn off" : "Turn on";
 	
 	// White/black lists
-	document.getElementById("user_whitelist_count").innerHTML = localStorage["user_whitelist"].split("|").length;
+	document.getElementById("user_whitelist_count").innerHTML = localStorage["user_whitelist"].split("|").length - 1;
 	document.getElementById("whitelist_count").innerHTML = localStorage["auto_whitelist"].split("|").length - 1;
 	document.getElementById("blacklist_count").innerHTML = localStorage["auto_blacklist"].split("|").length - 1;
 }
