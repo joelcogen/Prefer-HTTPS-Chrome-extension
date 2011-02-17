@@ -1,0 +1,77 @@
+<html>
+<head>
+	<title>Prefer HTTPS</title>
+	<style>
+		body {
+			width: 310px;
+			font-family: Helvetica, Verdana, Arial;
+			font-size: 12px;
+		}
+		textarea {
+			width: 300px;
+			height: 100px;
+		}
+	</style>
+</head>
+
+<script type="text/javascript">
+function set_status() {
+	// On/Off
+	document.getElementById("status").innerHTML = localStorage["onoff"];
+	document.getElementById("switchlink").innerHTML = localStorage["onoff"]=="on" ? "Turn off" : "Turn on";
+	
+	// White/black lists
+	document.getElementById("whitelist_count").innerHTML = localStorage["auto_whitelist"].split("|").length - 1;
+	document.getElementById("blacklist_count").innerHTML = localStorage["auto_blacklist"].split("|").length - 1;
+	
+	document.getElementById("user_whitelist").innerHTML = localStorage["user_whitelist"].split(/\\b\\B|\|\\b|\\b/).join("\n");
+}
+
+function turnOnOff() {
+	if(localStorage["onoff"]=="on") {
+		localStorage["onoff"] = "off";
+		chrome.browserAction.setIcon( {path: "icon_off.png"} );
+	}else{
+		localStorage["onoff"] = "on";
+		chrome.browserAction.setIcon( {path: "icon.png"} );
+	}
+	set_status();
+}
+
+function clearWhitelist() {
+	localStorage["auto_whitelist"] = "\\b\\B";
+	set_status();
+}
+function clearBlacklist() {
+	localStorage["auto_blacklist"] = "\\b\\B";
+	set_status();
+}
+
+function saveUserWhitelist() {
+	localStorage["user_whitelist"] = "\\b\\B|\\b" + document.getElementById("user_whitelist").value.split("\n").join("|\\b");
+	set_status();
+	alert("Changes saved");
+}
+
+</script>
+<body onload="set_status()">
+
+<h1>Prefer HTTPS</h1>
+
+<p>Prefer HTTPS is <strong id="status">loading...</strong> - <a href="javascript:turnOnOff()" id="switchlink">loading...</a></p>
+
+<p><span id="whitelist_count">loading...</span> URLs in <strong>auto whitelist</strong> (HTTPS not supported) - <a href="javascript:clearWhitelist()">clear</a></p>
+<p><span id="blacklist_count">loading...</span> URLs in <strong>auto blacklist</strong> (HTTPS supported) - <a href="javascript:clearBlacklist()">clear</a></p>
+<p style="font-size:10px">Clear the whitelist is Prefer HTTPS fails to redirect you to an HTTPS alternative. Clear the blacklist if Prefer HTTPS redirects you to an no longer available HTTPS alternative.</p>
+
+<br/><h2>User whitelist</h2>
+<p>List of URLs with <strong>no</strong> HTTPS support, one per line. If you experience problems with Prefer HTTPS on a website, add the beginning of the URL here.</p>
+<form>
+<textarea id="user_whitelist">
+loading...
+</textarea>
+<input type="submit" value="Save" onclick="javascript:saveUserWhitelist()" />
+</form>
+
+</body>
+</html>

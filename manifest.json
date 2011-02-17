@@ -1,0 +1,18 @@
+{
+	"name": "Prefer HTTPS",
+	"version": "1.2",
+	"description": "Always use HTTPS when available",
+	"homepage_url": "http://joelcogen.com/projects/chrome-extensions/",
+	"icons": { "128": "icon.png" },
+
+	"incognito": "split",
+	"permissions": [ "tabs", "https://*/" ],
+	"background_page": "background.html",
+	"options_page": "options.html",
+	
+	"browser_action": {
+		"default_icon": "icon.png",
+		"default_title": "Prefer HTTPS",
+		"default_popup": "popup.html"
+	}
+}

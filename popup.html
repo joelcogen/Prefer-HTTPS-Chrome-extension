@@ -1,0 +1,56 @@
+<html>
+<head>
+	<title>Prefer HTTPS</title>
+	<style>
+		body {
+			width: 310px;
+			font-family: Helvetica, Verdana, Arial;
+			font-size: 12px;
+		}
+	</style>
+</head>
+
+<script type="text/javascript">
+function set_status() {
+	// On/Off
+	document.getElementById("status").innerHTML = localStorage["onoff"];
+	document.getElementById("switchlink").innerHTML = localStorage["onoff"]=="on" ? "Turn off" : "Turn on";
+	
+	// White/black lists
+	document.getElementById("user_whitelist_count").innerHTML = localStorage["user_whitelist"].split("|").length;
+	document.getElementById("whitelist_count").innerHTML = localStorage["auto_whitelist"].split("|").length - 1;
+	document.getElementById("blacklist_count").innerHTML = localStorage["auto_blacklist"].split("|").length - 1;
+}
+
+function turnOnOff() {
+	if(localStorage["onoff"]=="on") {
+		localStorage["onoff"] = "off";
+		chrome.browserAction.setIcon( {path: "icon_off.png"} );
+	}else{
+		localStorage["onoff"] = "on";
+		chrome.browserAction.setIcon( {path: "icon.png"} );
+	}
+	set_status();
+}
+
+function clearWhitelist() {
+	localStorage["auto_whitelist"] = "\\bhttp://www.google.";
+	set_status();
+}
+function clearBlacklist() {
+	localStorage["auto_blacklist"] = "\\b\\B";
+	set_status();
+}
+
+</script>
+<body onload="set_status()">
+
+<p>Prefer HTTPS is <strong id="status">loading...</strong> - <a href="javascript:turnOnOff()" id="switchlink">loading...</a></p>
+
+<p><span id="user_whitelist_count">loading...</span> URLs in <strong>user whitelist</strong> (HTTPS not supported) - <a href="options.html" target="_blank">edit</a></p>
+<p><span id="whitelist_count">loading...</span> URLs in <strong>auto whitelist</strong> (HTTPS not supported) - <a href="javascript:clearWhitelist()">clear</a></p>
+<p><span id="blacklist_count">loading...</span> URLs in <strong>auto blacklist</strong> (HTTPS supported) - <a href="javascript:clearBlacklist()">clear</a></p>
+<p style="font-size:10px">Clear the whitelist is Prefer HTTPS fails to redirect you to an HTTPS alternative. Clear the blacklist if Prefer HTTPS redirects you to an no longer available HTTPS alternative.</p>
+
+</body>
+</html>
