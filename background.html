@@ -1,3 +1,5 @@
+<script src="preferhttps.js"></script>
+
 <script>
 	// Create whitelists and blacklist if they don't exist (first launch)
 	var whitelist = [
@@ -19,52 +21,18 @@
 		chrome.browserAction.setIcon( {path: "icon_off.png"} );
 	}
 	
-	// Function to redirect a tab
-	function loadNewURL(tabId, new_url) {
-		chrome.tabs.create( {url: new_url} );
-		chrome.tabs.remove(tabId);
-	}
+	
 
 	// Catch loading tabs
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		if(localStorage["onoff"]=="on" && changeInfo.status=="loading") {
-			old_url = changeInfo.url;
+			// Retreive tab URL
+			var old_url = changeInfo.url;
 			if(old_url==undefined) old_url = chrome.tabs.get(tabId).url;
 			
-			// Quit quickly and quietly if HTTPS already
-			if(old_url.match(/\bhttps:\/\//i)) return;
-			
-			// Check whitelists
-			if(old_url.match( new RegExp(localStorage["hard_whitelist"], "i") )) return;
-			if(old_url.match( new RegExp(localStorage["user_whitelist"], "i") )) return;
-			if(old_url.match( new RegExp(localStorage["auto_whitelist"], "i") )) return;
-			
-			// Compute HTTPS URL, quit if no changes were made (non-HTTP)
-			https_url = old_url.replace(/\bhttp:\/\//i, "https://");
-			if(https_url==old_url) return;
-			
-			// Check if HTTPS URL is blacklisted
-			if(https_url.match( new RegExp(localStorage["auto_blacklist"], "i") )) {
-				loadNewURL(tabId, https_url);
-				return;
-			}
-			
-			// Check HTTPS is available
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", https_url, true);
-			xhr.onreadystatechange = function() {
-				if (xhr.readyState == 4) {
-				 	if (xhr.status == 200) {
-						// Add to blacklist
-						localStorage["auto_blacklist"] += "|\\b" + https_url;
-			  		// Load new URL
-						loadNewURL(tabId, https_url);
-					}else{
-						localStorage["auto_whitelist"] += "|\\b" + old_url;
-					}
-				}
-			}
-			xhr.send();
+			// Compute HTTPS URL and redirect if found
+			var https_url = computeHttpsUrl(old_url);
+			if(https_url != false) loadNewURL(tabId, https_url);
 		}
 	});
 </script>
